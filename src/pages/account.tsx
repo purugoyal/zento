@@ -1,5 +1,5 @@
 // src/pages/account.tsx
-import NavBar from "../components/Navbar";
+import Navbar from "../components/Navbar";
 
 export default function AccountPage() {
   return (
