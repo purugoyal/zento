@@ -1,42 +1,64 @@
-import NextAuth from "next-auth";
+// src/pages/api/auth/[...nextauth].ts
+import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
-export default NextAuth({
-  // Use JSON Web Tokens (no database sessions)
-  session: { strategy: "jwt" },
-
-  // Our one provider: email+password
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
-      name: "Email and Password",
+      name: "Email & Password",
       credentials: {
-        email: { label: "Email", type: "email" },
+        email: { label: "Email", type: "email", placeholder: "you@example.com" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      authorize: async (credentials) => {
         if (!credentials) return null;
+
+        // 1) look up the user by email
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
         });
-        if (!user) throw new Error("No user found");
-        const valid = await bcrypt.compare(credentials.password, user.password);
-        if (!valid) throw new Error("Invalid password");
-        // return **any** object: it becomes `session.user`
-        return { id: user.id, email: user.email, name: user.firstName };
+        if (!user) return null;
+
+        // 2) verify password
+        const isValid = await bcrypt.compare(credentials.password, user.password);
+        if (!isValid) return null;
+
+        // 3) return the shape NextAuth expects (id must be string)
+        return {
+          id: user.id.toString(),
+          email: user.email,
+          name: `${user.firstName} ${user.lastName}`,
+        };
       },
     }),
   ],
 
-  // Tell NextAuth to use our custom pages:
-  pages: {
-    signIn: "/login",   // GET /login shows your login form
-    error: "/login",    // on errors, redirect back to /login?error=...
+  // If you want to persist the numeric id elsewhere in the session token:
+  callbacks: {
+    async jwt({ token, user }) {
+      // on initial sign in, copy user.id into the token
+      if (user) token.id = user.id;
+      return token;
+    },
+    async session({ session, token }) {
+      // make the id available on session.user.id
+      if (token.id) session.user.id = String(token.id);
+      return session;
+    },
   },
 
-  // Make sure you set this in `.env`:
-  secret: process.env.NEXTAUTH_SECRET,
-});
+  pages: {
+    signIn: "/login",
+    error: "/login", // display errors on the login page
+  },
+
+  session: {
+    strategy: "jwt",
+  },
+};
+
+export default NextAuth(authOptions);
