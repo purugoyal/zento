@@ -1,18 +1,27 @@
 // src/components/Button.tsx
-export default function Button({ children, onClick }) {
-    return (
-      <button
-        onClick={onClick}
-        style={{
-          padding:'12px 24px',
-          border:'none',
-          borderRadius:4,
-          background:'#f4b400',
-          color:'#000',
-          cursor:'pointer'
-        }}>
-        {children}
-      </button>
-    )
-  }
-  
+import React, { ReactNode, ButtonHTMLAttributes } from "react";
+
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  /** The things you put inside <Button>…</Button> */
+  children: ReactNode;
+}
+
+/** A fully‐typed button with default styling */
+export default function Button({ children, ...rest }: ButtonProps) {
+  return (
+    <button
+      {...rest}
+      style={{
+        padding: "0.5rem 1rem",
+        background: "#0070f3",
+        border: "none",
+        borderRadius: 4,
+        color: "#fff",
+        cursor: "pointer",
+        fontSize: "1rem",
+      }}
+    >
+      {children}
+    </button>
+  );
+}
