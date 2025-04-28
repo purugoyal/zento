@@ -18,12 +18,14 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
+    "skipLibCheck": true,
     "incremental": true,
     "esModuleInterop": true
   },
   "include": [
     "src"
   ],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/types/custom.d.ts"],
   "exclude": [
     "node_modules"
   ]
