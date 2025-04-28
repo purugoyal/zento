@@ -1,10 +1,10 @@
 // src/pages/account.tsx
-import NavBar from "../components/NavBar";
+import NavBar from "../components/Navbar";
 
 export default function AccountPage() {
   return (
     <>
-      <NavBar />
+      <Navbar />
       <main style={{
         maxWidth: 640,
         margin: "2rem auto",
