@@ -1,0 +1,59 @@
+/* src/styles/Dashboard.module.css */
+.container {
+  background: #f9fafb;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.heading {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 1.5rem;
+}
+
+.grid {
+  display: grid;
+  gap: 1.5rem;
+  /* always 3 columns on desktop */
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* fallback to 2 cols at tablet widths */
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* 1 col on narrow screens */
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  text-decoration: none;
+  color: inherit;
+  transition: box-shadow 0.2s;
+}
+.card:hover {
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.cardTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #111827;
+}
+
+.cardDesc {
+  font-size: 0.875rem;
+  color: #4b5563;
+}

@@ -1,0 +1,121 @@
+/* styles/globals.css */
+
+/* 1) Color variables */
+:root {
+  --bg: #0a0a0a;
+  --card-bg: #1e1e1e;
+  --text: #f5f5f5;
+  --subtext: #cfcfcf;
+  --accent: #00c805;
+  --accent-light: #32e35b;
+  --border: #2e2e2e;
+}
+
+/* 2) Reset + base */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+/* 3) Navbar */
+.navbar {
+  display: flex;
+  align-items: center;
+  padding: 0 2rem;
+  height: 4rem;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+}
+.navbar .logo {
+  font-weight: bold;
+  font-size: 1.25rem;
+  margin-right: auto;
+}
+.navbar .links a {
+  margin-left: 1.5rem;
+  color: var(--text);
+}
+
+/* 4) Page container */
+.page {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+/* 5) Buttons & Inputs */
+.button {
+  background: var(--accent);
+  color: var(--text);
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.375rem;
+  transition: background 0.2s;
+}
+.button:hover {
+  background: var(--accent-light);
+}
+.input {
+  flex: 1;
+  padding: 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+  background: #121212;
+  color: var(--text);
+}
+
+/* 6) StatCard */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill,minmax(240px,1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.stat-card {
+  background: var(--card-bg);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.stat-card .icon {
+  font-size: 1.5rem;
+  color: var(--accent);
+}
+.stat-card h3 {
+  margin: 0;
+}
+.stat-card p {
+  margin: 0;
+  font-weight: bold;
+}
+.stat-card small {
+  color: var(--subtext);
+}
+
+/* 7) Footer */
+.footer {
+  text-align: center;
+  padding: 2rem 0;
+  color: var(--subtext);
+  border-top: 1px solid var(--border);
+  margin-top: 4rem;
+}
