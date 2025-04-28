@@ -24,7 +24,10 @@ export const authOptions: NextAuthOptions = {
         if (!user) return null;
 
         // 2) verify password
-        const isValid = await bcrypt.compare(credentials.password, user.password);
+        const isValid = await bcrypt.compare(
+          credentials.password,
+          user.password
+        );
         if (!isValid) return null;
 
         // 3) return the shape NextAuth expects (id must be string)
@@ -37,16 +40,20 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
 
-  // If you want to persist the numeric id elsewhere in the session token:
   callbacks: {
     async jwt({ token, user }) {
       // on initial sign in, copy user.id into the token
-      if (user) token.id = user.id;
+      if (user) {
+        token.id = user.id;
+      }
       return token;
     },
+
     async session({ session, token }) {
-      // make the id available on session.user.id
-      if (token.id) session.user.id = String(token.id);
+      // only write into session.user.id if session.user is defined
+      if (session.user && token.id) {
+        session.user.id = String(token.id);
+      }
       return session;
     },
   },
