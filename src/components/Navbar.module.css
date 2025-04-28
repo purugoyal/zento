@@ -1,21 +1,20 @@
 /* src/components/Navbar.module.css */
 .navbar {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    padding: 1rem 2rem;
-    background: #ffffff;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  }
-  
-  .link {
-    color: #000;
-    font-weight: 500;
-    text-decoration: none;
-  }
-  
-  .link.active,
-  .link:hover {
-    color: #3ade4a; /* bright green */
-  }
-  
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1rem 2rem;
+  background: #ffffff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.link {
+  color: #000;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.link.active,
+.link:hover {
+  color: #3ade4a;
+}

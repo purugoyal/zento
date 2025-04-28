@@ -1,4 +1,5 @@
-import { ReactNode } from "react";
+// src/components/Layout.tsx
+import React, { ReactNode } from "react";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import Navbar from "./Navbar";
@@ -13,19 +14,14 @@ export default function Layout({ children }: LayoutProps) {
   const { pathname } = useRouter();
   const { data: session } = useSession();
   const isAuthed = !!session?.user;
+  const activePage = pathname === "/" ? "" : pathname.slice(1);
   const isLanding = pathname === "/";
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-      {/* Top nav always */}
-      <Navbar isAuthed={isAuthed} activePage={pathname.replace("/", "") || "dashboard"} />
-
-      {/* Main body */}
+      <Navbar isAuthed={isAuthed} activePage={activePage} />
       <div style={{ flex: 1, display: "flex", background: "#fff" }}>
-        {/* Sidebar only when signed in */}
-        {isAuthed && <Sidebar activePage={pathname.replace("/", "") || "dashboard"} />}
-
-        {/* Page content */}
+        {isAuthed && <Sidebar activePage={activePage} />}
         <main
           style={{
             flex: 1,
@@ -37,8 +33,6 @@ export default function Layout({ children }: LayoutProps) {
           {children}
         </main>
       </div>
-
-      {/* Footer only on landing page, unauthenticated */}
       {!isAuthed && isLanding && <Footer />}
     </div>
   );

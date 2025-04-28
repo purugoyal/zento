@@ -1,10 +1,12 @@
 // src/components/Sidebar.tsx
+import React from "react";
 import Link from "next/link";
-import { useRouter } from "next/router";
 
-export default function Sidebar() {
-  const { pathname } = useRouter();
+export interface SidebarProps {
+  activePage: string;
+}
 
+export default function Sidebar({ activePage }: SidebarProps) {
   const items = [
     { label: "Dashboard", href: "/dashboard" },
     { label: "Credit Line", href: null },
@@ -25,7 +27,7 @@ export default function Sidebar() {
     >
       <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
         {items.map((it) => {
-          const isActive = it.href === pathname;
+          const isActive = it.href === "/" + activePage;
           return (
             <li key={it.label} style={{ marginBottom: "1rem" }}>
               {it.href ? (

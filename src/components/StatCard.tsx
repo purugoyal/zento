@@ -1,13 +1,14 @@
 // src/components/StatCard.tsx
-import React from "react";
+import React, { ReactNode, CSSProperties } from "react";
 import Link from "next/link";
 
-interface StatCardProps {
+export interface StatCardProps {
   title: string;
   value: string;
   subtitle?: string;
-  icon?: React.ReactNode;
+  icon?: ReactNode;
   href?: string;
+  style?: CSSProperties;
 }
 
 export default function StatCard({
@@ -16,6 +17,7 @@ export default function StatCard({
   subtitle,
   icon,
   href,
+  style,
 }: StatCardProps) {
   const CardInner = (
     <div
@@ -29,6 +31,7 @@ export default function StatCard({
         flexDirection: "column",
         gap: "0.5rem",
         color: "#111",
+        ...(style || {}),
       }}
     >
       {icon && <div style={{ fontSize: "1.5rem" }}>{icon}</div>}
@@ -38,12 +41,11 @@ export default function StatCard({
     </div>
   );
 
-  if (href) {
-    return (
-      <Link href={href} style={{ textDecoration: "none", color: "inherit" }}>
-        {CardInner}
-      </Link>
-    );
-  }
-  return CardInner;
+  return href ? (
+    <Link href={href} style={{ textDecoration: "none", color: "inherit" }}>
+      {CardInner}
+    </Link>
+  ) : (
+    CardInner
+  );
 }
