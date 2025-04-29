@@ -55,7 +55,6 @@ export const authOptions: NextAuthOptions = {
 
     /** Make `session.user.id` available to the client */
     async session({ session, token }) {
-      // session.user is always defined in this callback (thanks to our d.ts augmentation)
       session.user.id = token.id as string;
       return session;
     },
