@@ -1,7 +1,8 @@
+// tsconfig.json
 {
   "compilerOptions": {
     "target": "es2020",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": ["dom","dom.iterable","esnext"],
     "allowJs": false,
     "skipLibCheck": true,
     "strict": true,
@@ -13,13 +14,17 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+
+    // ← tell TS to look for your custom .d.ts files here
+    "typeRoots": ["node_modules/@types", "src/types"]
   },
+
+  // one single include; pulls in code + your types
   "include": [
     "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    "src/types"               /* ← make sure *all* your custom .d.ts files get loaded */
+    "src"
   ],
+
   "exclude": ["node_modules"]
 }
