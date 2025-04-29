@@ -2,7 +2,7 @@
 {
   "compilerOptions": {
     "target": "es2020",
-    "lib": ["dom","dom.iterable","esnext"],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": false,
     "skipLibCheck": true,
     "strict": true,
@@ -16,15 +16,21 @@
     "incremental": true,
     "esModuleInterop": true,
 
-    // ← tell TS to look for your custom .d.ts files here
-    "typeRoots": ["node_modules/@types", "src/types"]
+    // ← Look here for ambient/type declarations
+    "typeRoots": [
+      "node_modules/@types",
+      "src/types"
+    ]
   },
 
-  // one single include; pulls in code + your types
+  // Pull in all your TS/TSX code PLUS every .d.ts under src/types
   "include": [
     "next-env.d.ts",
-    "src"
+    "src/**/*.{ts,tsx}",
+    "src/types/**/*.d.ts"
   ],
 
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }
