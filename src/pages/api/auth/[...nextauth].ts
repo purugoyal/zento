@@ -11,26 +11,30 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: "Email & Password",
       credentials: {
-        email: { label: "Email", type: "email", placeholder: "you@example.com" },
+        email: {
+          label: "Email",
+          type: "email",
+          placeholder: "you@example.com",
+        },
         password: { label: "Password", type: "password" },
       },
-      authorize: async (credentials) => {
+      async authorize(credentials) {
         if (!credentials) return null;
 
-        // 1) look up the user by email
+        // 1) Look up user by email
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
         });
         if (!user) return null;
 
-        // 2) verify password
-        const isValid = await bcrypt.compare(
+        // 2) Verify password
+        const valid = await bcrypt.compare(
           credentials.password,
           user.password
         );
-        if (!isValid) return null;
+        if (!valid) return null;
 
-        // 3) return the shape NextAuth expects (id must be string)
+        // 3) Return shape NextAuth expects: id *must* be a string
         return {
           id: user.id.toString(),
           email: user.email,
@@ -41,26 +45,25 @@ export const authOptions: NextAuthOptions = {
   ],
 
   callbacks: {
+    /** Persist the `user.id` into the encoded JWT on sign-in */
     async jwt({ token, user }) {
-      // on initial sign in, copy user.id into the token
       if (user) {
         token.id = user.id;
       }
       return token;
     },
 
+    /** Make `session.user.id` available to the client */
     async session({ session, token }) {
-      // only write into session.user.id if session.user is defined
-      if (session.user && token.id) {
-        session.user.id = String(token.id);
-      }
+      // session.user is always defined in this callback (thanks to our d.ts augmentation)
+      session.user.id = token.id as string;
       return session;
     },
   },
 
   pages: {
     signIn: "/login",
-    error: "/login", // display errors on the login page
+    error: "/login",
   },
 
   session: {
