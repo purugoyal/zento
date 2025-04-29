@@ -1,30 +1,14 @@
-// src/pages/credit-line.tsx
-import Card from '../components/Card'
-import Button from '../components/Button'
-
-export default function CreditLine() {
-  return (
-    <div>
-      <h1>Bitcoin‑Backed Loan</h1>
-      <Card style={{ padding:20, marginBottom:20, display:'flex', justifyContent:'space-between' }}>
-        <div><h2>31,800 USD</h2><p>Available Credit</p></div>
-        <div><h2>8,200 USD</h2><p>Current Balance</p></div>
-        <Button>Withdraw Funds</Button>
-      </Card>
-    </div>
-  )
-}
-// example: src/pages/dashboard.tsx
+// src/pages/mortgage.tsx
 import { GetServerSideProps } from "next";
-import { getTokenFromRequest, verifyToken } from "../../lib/auth";
+import Layout from "../components/Layout";
+import { getTokenFromRequest, verifyToken } from "../lib/auth";
 
-
-export default function Dashboard() {
+export default function MortgagePage() {
   return (
-    <div style={{ padding: 24 }}>
-      <h1>Dashboard</h1>
-      <p>Welcome to your dashboard!</p>
-    </div>
+    <Layout>
+      <h1>Mortgage</h1>
+      <p>Your mortgage dashboard and forms go here.</p>
+    </Layout>
   );
 }
 
