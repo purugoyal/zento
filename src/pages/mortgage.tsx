@@ -16,7 +16,8 @@ export default function CreditLine() {
 }
 // example: src/pages/dashboard.tsx
 import { GetServerSideProps } from "next";
-import { getTokenFromRequest, verifyToken } from "src/lib/auth";
+import { getTokenFromRequest, verifyToken } from "../../lib/auth";
+
 
 export default function Dashboard() {
   return (

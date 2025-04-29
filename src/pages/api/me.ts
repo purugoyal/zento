@@ -1,7 +1,8 @@
 // src/pages/api/me.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
-import { getTokenFromRequest, verifyToken } from "src/lib/auth";
+import { getTokenFromRequest, verifyToken } from "../../lib/auth";
+
 
 const prisma = new PrismaClient();
 
