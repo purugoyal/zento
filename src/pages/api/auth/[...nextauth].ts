@@ -8,7 +8,7 @@ import bcrypt from "bcrypt";
 const prisma = new PrismaClient();
 
 export const authOptions: NextAuthOptions = {
-  // 1) Turn on NextAuth’s internal debug & custom logger
+  // 1) Enable NextAuth debug + custom logger
   debug: true,
   logger: {
     error(code, metadata) {
@@ -22,7 +22,7 @@ export const authOptions: NextAuthOptions = {
     },
   },
 
-  // 2) Hook up the PrismaAdapter so NextAuth can read/write into Supabase via Prisma
+  // 2) Wire up Prisma adapter
   adapter: PrismaAdapter(prisma),
 
   // 3) Credentials provider
@@ -34,34 +34,46 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
+        console.log("🛠 authorize() start", { credentialsProvided: !!credentials });
+
         if (!credentials) {
-          console.log("authorize() called without credentials");
+          console.error("🚫 authorize() called without credentials");
           return null;
         }
 
-        console.log("authorize() credentials:", { email: credentials.email });
+        console.log("🛠 authorize() credentials:", { email: credentials.email });
 
-        // look up the user
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
-        });
-        console.log("authorize() found user:", user);
+        let user;
+        try {
+          user = await prisma.user.findUnique({
+            where: { email: credentials.email },
+          });
+          console.log("🛠 authorize() found user:", user);
+        } catch (err) {
+          console.error("🔥 authorize() prisma.findUnique error:", err);
+          throw new Error("Database lookup failed");
+        }
 
         if (!user) {
-          console.log("authorize() → no user, returning null");
+          console.warn("⚠️ authorize() no user for that email");
           return null;
         }
 
-        // verify password
-        const isValid = await bcrypt.compare(credentials.password, user.password);
-        console.log("authorize() bcrypt.compare result:", isValid);
+        let isValid: boolean;
+        try {
+          isValid = await bcrypt.compare(credentials.password, user.password);
+          console.log("🛠 authorize() bcrypt.compare result:", isValid);
+        } catch (err) {
+          console.error("🔥 authorize() bcrypt.compare error:", err);
+          throw new Error("Password check failed");
+        }
 
         if (!isValid) {
-          console.log("authorize() → invalid password, returning null");
+          console.warn("⚠️ authorize() invalid password");
           return null;
         }
 
-        // success! return the minimal user object
+        console.log("✅ authorize() success, returning user");
         return {
           id:    user.id.toString(),
           email: user.email,
@@ -71,7 +83,7 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
 
-  // 4) Persist the user.id into the token and session
+  // 4) Callbacks to persist `token.id` → `session.user.id`
   callbacks: {
     async jwt({ token, user }) {
       if (user) token.id = user.id;
@@ -83,7 +95,7 @@ export const authOptions: NextAuthOptions = {
     },
   },
 
-  // 5) Use your custom pages
+  // 5) Custom sign-in & error pages
   pages: {
     signIn: "/login",
     error:  "/login",
@@ -94,7 +106,7 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
 
-  // 7) Make sure you set NEXTAUTH_SECRET in your ENV vars
+  // 7) NEXTAUTH_SECRET must be set in your ENV
 };
 
 export default NextAuth(authOptions);
