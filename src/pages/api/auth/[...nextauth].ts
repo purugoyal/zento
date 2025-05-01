@@ -8,7 +8,7 @@ import bcrypt from "bcrypt";
 const prisma = new PrismaClient();
 
 export const authOptions: NextAuthOptions = {
-  // 1) DEBUG & custom logger
+  // 1) Turn on NextAuth’s internal debug & custom logger
   debug: true,
   logger: {
     error(code, metadata) {
@@ -22,7 +22,7 @@ export const authOptions: NextAuthOptions = {
     },
   },
 
-  // 2) Prisma adapter
+  // 2) Hook up the PrismaAdapter so NextAuth can read/write into Supabase via Prisma
   adapter: PrismaAdapter(prisma),
 
   // 3) Credentials provider
@@ -34,16 +34,34 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials) return null;
+        if (!credentials) {
+          console.log("authorize() called without credentials");
+          return null;
+        }
 
+        console.log("authorize() credentials:", { email: credentials.email });
+
+        // look up the user
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
         });
-        if (!user) return null;
+        console.log("authorize() found user:", user);
 
+        if (!user) {
+          console.log("authorize() → no user, returning null");
+          return null;
+        }
+
+        // verify password
         const isValid = await bcrypt.compare(credentials.password, user.password);
-        if (!isValid) return null;
+        console.log("authorize() bcrypt.compare result:", isValid);
 
+        if (!isValid) {
+          console.log("authorize() → invalid password, returning null");
+          return null;
+        }
+
+        // success! return the minimal user object
         return {
           id:    user.id.toString(),
           email: user.email,
@@ -53,7 +71,7 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
 
-  // 4) Callbacks
+  // 4) Persist the user.id into the token and session
   callbacks: {
     async jwt({ token, user }) {
       if (user) token.id = user.id;
@@ -65,18 +83,18 @@ export const authOptions: NextAuthOptions = {
     },
   },
 
-  // 5) Custom pages
+  // 5) Use your custom pages
   pages: {
     signIn: "/login",
     error:  "/login",
   },
 
-  // 6) Session strategy
+  // 6) Use JWT sessions
   session: {
     strategy: "jwt",
   },
 
-  // 7) NEXTAUTH_SECRET must be set in your ENV
+  // 7) Make sure you set NEXTAUTH_SECRET in your ENV vars
 };
 
 export default NextAuth(authOptions);
