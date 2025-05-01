@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { signIn, getSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { GetServerSideProps } from "next";
+import type { GetServerSideProps } from "next";
 
 export default function LoginPage() {
   const [email, setEmail]       = useState("");
@@ -14,14 +14,15 @@ export default function LoginPage() {
     e.preventDefault();
     setError(null);
 
-    const result = await signIn("credentials", {
+    const res = await signIn("credentials", {
       redirect: false,
       email,
       password,
     });
 
-    if (result?.error) {
-      setError(result.error);
+    if (res?.error) {
+      // show a friendly message instead of raw error
+      setError("Invalid email or password");
     } else {
       router.push("/dashboard");
     }
@@ -36,8 +37,9 @@ export default function LoginPage() {
         </p>
       )}
       <form onSubmit={handleSubmit} style={{ display: "grid", gap: "1rem" }}>
-        <label>Email</label>
+        <label htmlFor="email">Email</label>
         <input
+          id="email"
           type="email"
           required
           value={email}
@@ -45,8 +47,9 @@ export default function LoginPage() {
           style={{ padding: "0.75rem", borderRadius: 4, border: "1px solid #ccc" }}
         />
 
-        <label>Password</label>
+        <label htmlFor="password">Password</label>
         <input
+          id="password"
           type="password"
           required
           value={password}
@@ -73,7 +76,7 @@ export default function LoginPage() {
   );
 }
 
-// redirect away if already signed in
+// If the user is already logged in, redirect to dashboard
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getSession(ctx);
   if (session) {
