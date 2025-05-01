@@ -8,57 +8,75 @@ import bcrypt from "bcrypt";
 const prisma = new PrismaClient();
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),    // ← add this line
+  // 1) DEBUG & custom logger
+  debug: true,
+  logger: {
+    error(code, metadata) {
+      console.error("❌ NextAuth ERROR", code, metadata);
+    },
+    warn(code) {
+      console.warn("⚠️ NextAuth WARN", code);
+    },
+    debug(code, metadata) {
+      console.debug("🐛 NextAuth DEBUG", code, metadata);
+    },
+  },
+
+  // 2) Prisma adapter
+  adapter: PrismaAdapter(prisma),
+
+  // 3) Credentials provider
   providers: [
     CredentialsProvider({
       name: "Email & Password",
       credentials: {
-        email: { label: "Email", type: "email", placeholder: "you@example.com" },
+        email:    { label: "Email",    type: "email",    placeholder: "you@example.com" },
         password: { label: "Password", type: "password" },
       },
-
       async authorize(credentials) {
         if (!credentials) return null;
 
-        // 1) Look up user by email
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
         });
         if (!user) return null;
 
-        // 2) Verify password
-        const valid = await bcrypt.compare(credentials.password, user.password);
-        if (!valid) return null;
+        const isValid = await bcrypt.compare(credentials.password, user.password);
+        if (!isValid) return null;
 
-        // 3) Return shape NextAuth expects (id must be a string)
         return {
-          id: user.id.toString(),
+          id:    user.id.toString(),
           email: user.email,
-          name: `${user.firstName} ${user.lastName}`,
+          name:  `${user.firstName} ${user.lastName}`,
         };
       },
     }),
   ],
 
+  // 4) Callbacks
   callbacks: {
     async jwt({ token, user }) {
       if (user) token.id = user.id;
       return token;
     },
     async session({ session, token }) {
-      session.user.id = token.id as string;
+      if (session.user) session.user.id = token.id as string;
       return session;
     },
   },
 
+  // 5) Custom pages
   pages: {
     signIn: "/login",
-    error: "/login",
+    error:  "/login",
   },
 
+  // 6) Session strategy
   session: {
     strategy: "jwt",
   },
+
+  // 7) NEXTAUTH_SECRET must be set in your ENV
 };
 
 export default NextAuth(authOptions);
